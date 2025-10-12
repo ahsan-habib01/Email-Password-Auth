@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../Firebase/firebase.init';
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { Link } from 'react-router';
 
 const Register = () => {
   const [success, setSuccess] = useState(false);
@@ -13,7 +14,8 @@ const Register = () => {
 
     const email = e.target.email.value;
     const password = e.target.password.value;
-    console.log('clicked', email, password);
+    const terms = e.target.terms.checked;
+    console.log('clicked', email, password, terms);
 
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&]).{6,}$/;
 
@@ -47,6 +49,11 @@ const Register = () => {
     setError('');
     setSuccess(false);
 
+    if (!terms) {
+      setError('Please accept our terms and conditions')
+      return
+    }
+
     createUserWithEmailAndPassword(auth, email, password)
       .then(result => {
         console.log('after auth', result.user);
@@ -64,13 +71,10 @@ const Register = () => {
     setShowPassword(!showPassword);
   };
   return (
-    <div className="hero bg-base-200 min-h-screen">
-      <div className="hero-content flex-col lg:flex-row-reverse">
-        <div className="text-center lg:text-left">
-          <h1 className="text-5xl font-bold">Register now!</h1>
-        </div>
-        <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
+  
+        <div className="card bg-base-100 m-auto w-full max-w-sm shrink-0 shadow-2xl">
           <div className="card-body">
+            <h1 className="text-3xl font-bold">Register now!</h1>
             <form onSubmit={handleRegister}>
               <fieldset className="fieldset">
                 <label className="label">Email</label>
@@ -101,7 +105,7 @@ const Register = () => {
                 </div>
                 <div>
                   <label class="label">
-                    <input type="checkbox"  class="checkbox" />
+                    <input type="checkbox" name="terms" class="checkbox" />
                     Accept Our Terms & Conditions
                   </label>
                 </div>
@@ -115,10 +119,15 @@ const Register = () => {
               )}
               {error && <p className="text-red-500">{error}</p>}
             </form>
+            <p>
+              Already have an account? Please{' '}
+              <Link to="/login" className="text-blue-400 underline">
+                Login
+              </Link>
+            </p>
           </div>
         </div>
-      </div>
-    </div>
+  
   );
 };
 
